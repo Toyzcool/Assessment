@@ -1,0 +1,379 @@
+package bin;
+
+import domain.AstronomicalObject;
+import domain.Messier;
+import domain.Planet;
+import domain.Star;
+import vo.Condition;
+import vo.Query;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class QueryRunner implements QueryResults{
+    // Store the copy of collection of AstronomicalObject objects
+    private static List<AstronomicalObject> allObjects;
+
+    /**
+     * Return an object which implements the interface QueryResult
+     * @param query The query needed to answer
+     * @return The string of answer
+     * @throws NullPointerException
+     * @throws NumberFormatException
+     * @throws ClassCastException
+     */
+    public static QueryResults run(Query query) throws NullPointerException,NumberFormatException,ClassCastException {
+        return new QueryResults() {
+            /**
+             * Parse and run the query then return answer
+             * @return List of objects' name or catalog number
+             */
+            @Override public List<AstronomicalObject> search() throws Exception {
+                List<AstronomicalObject> aos = getAllObjects(); // Get all the objects
+                switch (query.getType()){
+                    // Search stars
+                    case "Star":
+                        aos = aos.stream().filter(s -> s instanceof Star).collect(Collectors.toList());
+                        for (Condition condition : query.getConditions()) {
+                            switch (condition.getProperty()){
+                                case "ra": case "decl": case "magn": case "distance":
+                                    aos = genCondition(aos,condition);
+                                    break;
+                                case "number":
+                                    switch (condition.getOperator()){
+                                        case "=":
+                                            aos = aos.stream()
+                                                .filter(s -> ((Star) s).getNumber().equals(condition.getValue())).collect(
+                                                    Collectors.toList());
+                                            break;
+                                        case "!=":
+                                            aos = aos.stream().filter(s -> (!((Star) s).getNumber().equals(condition.getValue()))).collect(
+                                                Collectors.toList());
+                                            break;
+                                        default:
+                                            throw new Exception("The condition operator is wrong:" + condition);
+                                    }
+                                    break;
+                                case "type":
+                                    switch (condition.getOperator()){
+                                        case "=":
+                                            aos = aos.stream()
+                                                .filter(s -> ((Star) s).getType().equals(condition.getValue())).collect(
+                                                    Collectors.toList());
+                                            break;
+                                        case "!=":
+                                            aos = aos.stream()
+                                                .filter(s -> (!((Star) s).getType().equals(condition.getValue()))).collect(
+                                                Collectors.toList());
+                                            break;
+                                        default:
+                                            throw new Exception("The condition operator is wrong:" + condition);
+                                    }
+                                    break;
+                                case "constellation":
+                                    switch (condition.getOperator()){
+                                        case "=":
+                                            aos = aos.stream()
+                                                .filter(s -> ((Star) s).getConstellation().equals(condition.getValue())).collect(
+                                                    Collectors.toList());
+                                            break;
+                                        case "!=":
+                                            aos = aos.stream()
+                                                .filter(s -> (!((Star) s).getConstellation().equals(condition.getValue()))).collect(
+                                                    Collectors.toList());
+                                            break;
+                                        default:
+                                            throw new Exception("The condition operator is wrong:" + condition);
+                                    }
+                                    break;
+                                default:
+                                    throw new Exception("The variable name is wrong:" + condition.getProperty());
+                            }
+                        }
+                        break;
+                    // Search messiers
+                    case "Messier":
+                        aos = aos.stream().filter(s -> s instanceof Messier).collect(Collectors.toList());
+                        for (Condition condition : query.getConditions()) {
+                            switch (condition.getProperty()){
+                                case "ra": case "decl": case "magn": case "distance":
+                                    aos = genCondition(aos,condition);
+                                    break;
+                                case "number":
+                                    switch (condition.getOperator()){
+                                        case "=":
+                                            aos = aos.stream()
+                                                .filter(s -> ((Messier) s).getNumber().equals(condition.getValue())).collect(
+                                                    Collectors.toList());
+                                            break;
+                                        case "!=":
+                                            aos = aos.stream().filter(s -> (!((Messier) s).getNumber().equals(condition.getValue()))).collect(
+                                                Collectors.toList());
+                                            break;
+                                        default:
+                                            throw new Exception("The condition operator is wrong:" + condition);
+                                    }
+                                    break;
+                                case "description":
+                                    switch (condition.getOperator()){
+                                        case "=":
+                                            aos = aos.stream()
+                                                .filter(s -> ((Messier) s).getDescription().equals(condition.getValue())).collect(
+                                                    Collectors.toList());
+                                            break;
+                                        case "!=":
+                                            aos = aos.stream()
+                                                .filter(s -> (!((Messier) s).getDescription().equals(condition.getValue()))).collect(
+                                                Collectors.toList());
+                                            break;
+                                        default:
+                                            throw new Exception("The condition operator is wrong:" + condition);
+                                    }
+                                    break;
+                                default:
+                                    throw new Exception("The variable name is wrong:" + condition.getProperty());
+                            }
+                        }
+                        break;
+                    // Search planets
+                    case "Planet":
+                        aos = aos.stream().filter(s -> s instanceof Planet).collect(Collectors.toList());
+                        for (Condition condition : query.getConditions()) {
+                            switch (condition.getProperty()){
+                                case "ra": case "decl": case "magn": case "distance":
+                                    aos = genCondition(aos,condition);
+                                    break;
+                                case "name":
+                                    switch (condition.getOperator()){
+                                        case "=":
+                                            aos = aos.stream()
+                                                .filter(s -> ((Planet) s).getName().equals(condition.getValue())).collect(
+                                                    Collectors.toList());
+                                            break;
+                                        case "!=":
+                                            aos = aos.stream()
+                                                .filter(s -> (!((Planet) s).getName().equals(condition.getValue()))).collect(
+                                                Collectors.toList());
+                                            break;
+                                        default:
+                                            throw new Exception("The condition operator is wrong:" + condition);
+                                    }
+                                    break;
+                                case "albedo":
+                                    switch (condition.getOperator()){
+                                        case ">":
+                                            aos = aos.stream()
+                                                .filter(s -> ((Planet) s).getAlbedo() > Double.parseDouble(condition.getValue())).collect(
+                                                    Collectors.toList());
+                                            break;
+                                        case ">=":
+                                            aos = aos.stream()
+                                                .filter(s -> ((Planet) s).getAlbedo() >= Double.parseDouble(condition.getValue())).collect(
+                                                    Collectors.toList());
+                                            break;
+                                        case "=":
+                                            aos = aos.stream()
+                                                .filter(s -> ((Planet) s).getAlbedo() == Double.parseDouble(condition.getValue())).collect(
+                                                    Collectors.toList());
+                                            break;
+                                        case "!=":
+                                            aos = aos.stream()
+                                                .filter(s -> ((Planet) s).getAlbedo() != Double.parseDouble(condition.getValue())).collect(
+                                                    Collectors.toList());
+                                            break;
+                                        case "<=":
+                                            aos = aos.stream()
+                                                .filter(s -> ((Planet) s).getAlbedo() <= Double.parseDouble(condition.getValue())).collect(
+                                                    Collectors.toList());
+                                            break;
+                                        case "<":
+                                            aos = aos.stream()
+                                                .filter(s -> ((Planet) s).getAlbedo() < Double.parseDouble(condition.getValue())).collect(
+                                                    Collectors.toList());
+                                            break;
+                                        default:
+                                            throw new Exception("The condition operator is wrong:" + condition);
+                                    }
+                                    break;
+                                default:
+                                    throw new Exception("The variable name is wrong:" + condition.getProperty());
+                            }
+                        }
+                        break;
+                    default:
+                        throw new Exception("The type name is wrong:" + query);
+                }
+                return aos;
+            }
+        };
+    }
+
+    /**
+     * Filter collections via general variables(RA, Declination, Magnitude, Distance from the Earth).
+     * @param aos The collection needing to be filtered
+     * @param condition The condition used to filtered
+     * @return The collection after filtered
+     */
+    private static List<AstronomicalObject> genCondition(List<AstronomicalObject> aos, Condition condition) throws Exception {
+        switch (condition.getProperty()){
+            case "ra":
+                switch (condition.getOperator()){
+                    case ">":
+                        aos = aos.stream()
+                            .filter(s -> s.getRa() > Double.parseDouble(condition.getValue())).collect(
+                                Collectors.toList());
+                        break;
+                    case ">=":
+                        aos = aos.stream()
+                            .filter(s -> s.getRa() >= Double.parseDouble(condition.getValue())).collect(
+                                Collectors.toList());
+                        break;
+                    case "=":
+                        aos = aos.stream()
+                            .filter(s -> s.getRa() == Double.parseDouble(condition.getValue())).collect(
+                                Collectors.toList());
+                        break;
+                    case "!=":
+                        aos = aos.stream()
+                            .filter(s -> s.getRa() != Double.parseDouble(condition.getValue())).collect(
+                                Collectors.toList());
+                        break;
+                    case "<=":
+                        aos = aos.stream()
+                            .filter(s -> s.getRa() <= Double.parseDouble(condition.getValue())).collect(
+                                Collectors.toList());
+                        break;
+                    case "<":
+                        aos = aos.stream()
+                            .filter(s -> s.getRa() < Double.parseDouble(condition.getValue())).collect(
+                                Collectors.toList());
+                        break;
+                    default:
+                        throw new Exception("The condition operator is wrong:" + condition);
+                }
+                break;
+            case "decl":
+                switch (condition.getOperator()){
+                    case ">":
+                        aos = aos.stream()
+                            .filter(s -> s.getDecl() > Double.parseDouble(condition.getValue())).collect(
+                                Collectors.toList());
+                        break;
+                    case ">=":
+                        aos = aos.stream()
+                            .filter(s -> s.getDecl() >= Double.parseDouble(condition.getValue())).collect(
+                                Collectors.toList());
+                        break;
+                    case "=":
+                        aos = aos.stream()
+                            .filter(s -> s.getDecl() == Double.parseDouble(condition.getValue())).collect(
+                                Collectors.toList());
+                        break;
+                    case "!=":
+                        aos = aos.stream()
+                            .filter(s -> s.getDecl() != Double.parseDouble(condition.getValue())).collect(
+                                Collectors.toList());
+                        break;
+                    case "<=":
+                        aos = aos.stream()
+                            .filter(s -> s.getDecl() <= Double.parseDouble(condition.getValue())).collect(
+                                Collectors.toList());
+                        break;
+                    case "<":
+                        aos = aos.stream()
+                            .filter(s -> s.getDecl() < Double.parseDouble(condition.getValue())).collect(
+                                Collectors.toList());
+                        break;
+                    default:
+                        throw new Exception("The condition operator is wrong:" + condition);
+                }
+                break;
+            case "magn":
+                switch (condition.getOperator()){
+                    case ">":
+                        aos = aos.stream()
+                            .filter(s -> s.getMagn() > Double.parseDouble(condition.getValue())).collect(
+                                Collectors.toList());
+                        break;
+                    case ">=":
+                        aos = aos.stream()
+                            .filter(s -> s.getMagn() >= Double.parseDouble(condition.getValue())).collect(
+                                Collectors.toList());
+                        break;
+                    case "=":
+                        aos = aos.stream()
+                            .filter(s -> s.getMagn() == Double.parseDouble(condition.getValue())).collect(
+                                Collectors.toList());
+                        break;
+                    case "!=":
+                        aos = aos.stream()
+                            .filter(s -> s.getMagn() != Double.parseDouble(condition.getValue())).collect(
+                                Collectors.toList());
+                        break;
+                    case "<=":
+                        aos = aos.stream()
+                            .filter(s -> s.getMagn() <= Double.parseDouble(condition.getValue())).collect(
+                                Collectors.toList());
+                        break;
+                    case "<":
+                        aos = aos.stream()
+                            .filter(s -> s.getMagn() < Double.parseDouble(condition.getValue())).collect(
+                                Collectors.toList());
+                        break;
+                    default:
+                        throw new Exception("The condition operator is wrong:" + condition);
+                }
+                break;
+            case "distance":
+                switch (condition.getOperator()){
+                    case ">":
+                        aos = aos.stream()
+                            .filter(s -> s.getDistance() > Double.parseDouble(condition.getValue())).collect(
+                                Collectors.toList());
+                        break;
+                    case ">=":
+                        aos = aos.stream()
+                            .filter(s -> s.getDistance() >= Double.parseDouble(condition.getValue())).collect(
+                                Collectors.toList());
+                        break;
+                    case "=":
+                        aos = aos.stream()
+                            .filter(s -> s.getDistance() == Double.parseDouble(condition.getValue())).collect(
+                                Collectors.toList());
+                        break;
+                    case "!=":
+                        aos = aos.stream()
+                            .filter(s -> s.getDistance() != Double.parseDouble(condition.getValue())).collect(
+                                Collectors.toList());
+                        break;
+                    case "<=":
+                        aos = aos.stream()
+                            .filter(s -> s.getDistance() <= Double.parseDouble(condition.getValue())).collect(
+                                Collectors.toList());
+                        break;
+                    case "<":
+                        aos = aos.stream()
+                            .filter(s -> s.getDistance() < Double.parseDouble(condition.getValue())).collect(
+                                Collectors.toList());
+                        break;
+                    default:
+                        throw new Exception("The condition operator is wrong:" + condition);
+                }
+                break;
+            default:
+                throw new Exception("The variable name is wrong:" + condition.getProperty());
+        }
+        return aos;
+    }
+
+
+    public static List<AstronomicalObject> getAllObjects()
+    {
+        return allObjects;
+    }
+
+    public static void setAllObjects(List<AstronomicalObject> allObjects) {
+        QueryRunner.allObjects = allObjects;
+    }
+
+}

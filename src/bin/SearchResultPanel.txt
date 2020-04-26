@@ -1,0 +1,181 @@
+package view;
+
+
+import utility.AstronomicalObjectDAO;
+import vo.Query;
+
+import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+
+public class SearchResultPanel extends JPanel {
+    private JPanel starPanel;
+    private JPanel messierPanel;
+    private JPanel planetPanel;
+
+    public SearchResultPanel() {
+        Border border = BorderFactory.createTitledBorder("Search Result");
+        setBorder(border);
+        setLayout(new GridLayout(3,1));
+        Query query = null;
+        AstronomicalObjectDAO astronomicalObjectDAO = new AstronomicalObjectDAO();
+        Map<String,List<Vector<String>>> map = astronomicalObjectDAO.get(query);
+        updateTable(map);
+        // Add three table to panel
+        add(starPanel);
+        add(messierPanel);
+        add(planetPanel);
+    }
+
+    // fix
+    public void updateTable(Map<String, List<Vector<String>>> map){
+        Border border;
+        JScrollPane scroll;
+        JTable table;
+        DefaultTableModel model;
+        Vector<String> header;
+
+        if (map.containsKey("Star")){
+            // Create star table
+            header = new Vector<>();
+            header.add("Number");
+            header.add("RA");
+            header.add("Declination");
+            header.add("Magnitude");
+            header.add("Distance");
+            header.add("Type");
+            header.add("Constellation");
+            model = new DefaultTableModel();
+            model.setColumnIdentifiers(header);
+            for (Vector<String> vector : map.get("Star")) {
+                model.addRow(vector);
+            }
+            table = new JTable();
+            table.setModel(model);
+            // Set scroll panel
+            scroll = new JScrollPane(table);
+            scroll.setPreferredSize(new Dimension(1100,100));
+            border = BorderFactory.createTitledBorder("Star");
+            scroll.setBorder(border);
+            starPanel = new JPanel();
+            starPanel.add(scroll);
+        }else {
+            // Create star table
+            header = new Vector<>();
+            header.add("Number");
+            header.add("RA");
+            header.add("Declination");
+            header.add("Magnitude");
+            header.add("Distance");
+            header.add("Type");
+            header.add("Constellation");
+            model = new DefaultTableModel();
+            model.setColumnIdentifiers(header);
+            table = new JTable();
+            table.setModel(model);
+            // Set scroll panel
+            scroll = new JScrollPane(table);
+            scroll.setPreferredSize(new Dimension(1100,100));
+            border = BorderFactory.createTitledBorder("Star");
+            scroll.setBorder(border);
+            starPanel = new JPanel();
+            starPanel.add(scroll);
+        }
+
+        if (map.containsKey("Messier")) {
+            // Create messier table
+            header = new Vector<>();
+            header.add("Number");
+            header.add("RA");
+            header.add("Declination");
+            header.add("Magnitude");
+            header.add("Distance");
+            header.add("Constellation");
+            header.add("Description");
+            model = new DefaultTableModel();
+            model.setColumnIdentifiers(header);
+            for (Vector<String> vector : map.get("Messier")) {
+                model.addRow(vector);
+            }
+            table = new JTable();
+            table.setModel(model);
+            // Set scroll panel
+            scroll = new JScrollPane(table);
+            scroll.setPreferredSize(new Dimension(1100,100));
+            border = BorderFactory.createTitledBorder("Messier");
+            scroll.setBorder(border);
+            messierPanel = new JPanel();
+            messierPanel.add(scroll);
+        }else {
+            // Create messier table
+            header = new Vector<>();
+            header.add("Number");
+            header.add("RA");
+            header.add("Declination");
+            header.add("Magnitude");
+            header.add("Distance");
+            header.add("Constellation");
+            header.add("Description");
+            model = new DefaultTableModel();
+            model.setColumnIdentifiers(header);
+            table = new JTable();
+            table.setModel(model);
+            // Set scroll panel
+            scroll = new JScrollPane(table);
+            scroll.setPreferredSize(new Dimension(1100,100));
+            border = BorderFactory.createTitledBorder("Messier");
+            scroll.setBorder(border);
+            messierPanel = new JPanel();
+            messierPanel.add(scroll);
+        }
+
+        if (map.containsKey("Planet")){
+            // Create planet table
+            header = new Vector<>();
+            header.add("Name");
+            header.add("RA");
+            header.add("Declination");
+            header.add("Magnitude");
+            header.add("Distance");
+            header.add("Albedo");
+            model = new DefaultTableModel();
+            model.setColumnIdentifiers(header);
+            for (Vector<String> vector : map.get("Planet")) {
+                model.addRow(vector);
+            }
+            table = new JTable();
+            table.setModel(model);
+            // Set scroll panel
+            scroll = new JScrollPane(table);
+            scroll.setPreferredSize(new Dimension(1100,100));
+            border = BorderFactory.createTitledBorder("Planet");
+            scroll.setBorder(border);
+            planetPanel = new JPanel();
+            planetPanel.add(scroll);
+        }else {
+            // Create planet table
+            header = new Vector<>();
+            header.add("Name");
+            header.add("RA");
+            header.add("Declination");
+            header.add("Magnitude");
+            header.add("Distance");
+            header.add("Albedo");
+            model = new DefaultTableModel();
+            model.setColumnIdentifiers(header);
+            table = new JTable();
+            table.setModel(model);
+            // Set scroll panel
+            scroll = new JScrollPane(table);
+            scroll.setPreferredSize(new Dimension(1100,100));
+            border = BorderFactory.createTitledBorder("Planet");
+            scroll.setBorder(border);
+            planetPanel = new JPanel();
+            planetPanel.add(scroll);
+        }
+    }
+}

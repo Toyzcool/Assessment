@@ -1,0 +1,10 @@
+package bin;
+
+import domain.AstronomicalObject;
+import vo.Query;
+
+import java.util.List;
+
+public interface QueryResults {
+    List<AstronomicalObject> search(Query query);
+}
